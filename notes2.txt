@@ -1,0 +1,37 @@
+python manage.py startapp <app name>
+
+
+INSTALLED_APPS
+
+app --> views --> app urls --> include project urls
+
+create index.html page
+        create view and url for index
+        for the todo project, views handle GET and POST requests
+        
+
+python manage.py runserver
+
+What are django apps
+how can we pass data from views to html: use {{<variable name in python>}} in html
+
+python manage.py makemigrations
+python manage.py migrate
+
+Download SQLite and SQLite Viewer extention 
+
+python manage.py createsuperuser
+
+ORM in django
+
+
+
+
+ADDING STYLES
+in <appname>/settings.py -> last line: 
+        STATIC_URL = 'static/'
+        STATICFILES_DIRS=[BASE_DIR/"static"]
+
+Create a static folder in the same later as manage.py
+in static folder, create css folder
+in css folder create styles.css
