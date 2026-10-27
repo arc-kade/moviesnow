@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Edit task</h1>
+    <div class="task-form">
+        <form method="post" action="">
+            {% csrf_token %}
+            <legend>New Task:</legend>
+            <div>
+                <input type="text" value="{{my_task.task}}" name="task_name">
+                <input type="checkbox" value="true" name="status" {% if my_task.is_completed %} checked {% endif %}>
+                <input type="submit" value="Save Changes">
+            </div>
+
+        </form>
+    </div>
+</body>
+</html>

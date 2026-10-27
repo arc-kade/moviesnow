@@ -1,0 +1,24 @@
+To create new dango project:
+virtualenv venv
+.\venv\Scripts\activate
+pip install django
+django-admin startproject mysite(or config if already in the project directory) .
+python manage.py startapp <app name>
+
+
+settings.py:
+in TEMPLATES:
+    'DIRS': [BASE_DIR/"templates"],
+
+STATIC_URL = 'static/'
+STATICFILES_DIRS=[BASE_DIR/"static"]
+MEDIA_URL="media/"
+MEDIA_ROOT=BASE_DIR/"media"
+
+urls.py:
+from django.shortcuts import render
+
+from django.conf.urls.static import static
+from django.conf import settings
+
+urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
