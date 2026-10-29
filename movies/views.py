@@ -28,6 +28,24 @@ def movie_list(request):
 def updateMovie(request,movie_id):
     categories = Category.objects.all()
     movie=Movie.objects.get(id=movie_id)
+    if request.method=="POST":
+        movie_name=request.POST["movie"]
+        tr_link=request.POST["trailer_link"]
+        cate = request.POST["category"]
+        re_date=request.POST["release_date"]
+        if "poster" in request.FILES:
+            poster = request.FILES["poster"]
+            movie.poster = poster
+        desc = request.POST["description"]
+        rating = request.POST["rating"]
+        movie.movie=movie_name
+        movie.trailer_link=tr_link
+        movie.category=cate
+        movie.release_date=re_date
+        movie.description=desc
+        movie.rating=rating
+        movie.save()
+        return redirect("movie-detial",movie_id)
     return render(request, "update-movie.html",{"movie":movie,"categories":categories})
 
 def viewMovie(request,movie_id):

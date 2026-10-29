@@ -93,6 +93,14 @@
                     Watch Trailer
                 </a>
 
+                <a href="{% url 'movie-detail' movie.id %}">
+                    <button type = "button">View</button>
+                </a>
+
+                <a href="{% url 'update-movie' movie.id %}">
+                    <button type="button">Update</button>
+                </a>
+
             </div>
 
         {% empty %}
