@@ -3,6 +3,9 @@ from django.shortcuts import render,redirect
 # Create your views here.
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from django.http import HttpResponse
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -25,5 +28,19 @@ def signIn(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        user=auth.authenticate(username=username,password=password)
+        if user is not None:
+            auth.login(request,user)
+            return redirect("/")
+        else:
+            return HttpResponse("Invalid username or password")
+
+    return render(request,"login.html")
+
+@login_required(login_url="login")
+def Logout(request):
+    auth.logout(request)
+    return redirect("/")
+
         
     return render(request,"login.html")
