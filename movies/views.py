@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from movies.models import Category,Movie
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,7 @@ def addMovie(request):
         Movie(movie=movie,trailer_link=trailer,category=category,release_date=release_date,poster=poster,description=desc,rating=rating).save()
         return redirect("all-movies")
     categories=Category.objects.all()
-    return render(request,"add-movies.html",{"categories":categories})
+    return render(request,"add-movies.html")
 
 def movie_list(request):
     movies = Movie.objects.all()
@@ -30,7 +30,7 @@ def movie_list(request):
 @login_required(login_url="login")
 def updateMovie(request,movie_id):
     categories = Category.objects.all()
-    movie=Movie.objects.get(id=movie_id)
+    movie=get_object_or_404(Movie,id=movie_id)
     if request.method=="POST":
         movie_name=request.POST["movie"]
         tr_link=request.POST["trailer_link"]
@@ -54,7 +54,12 @@ def updateMovie(request,movie_id):
 
 @login_required(login_url="login")
 def viewMovie(request,movie_id):
-    my_movie=Movie.objects.get(id=movie_id)
+    try:
+        my_movie= Movie.objects.get(id=movie_id)
+
+    except Movie.DoesNotExist:
+        my_movie=None
+    
     return render(request, "movie-detail.html",{"movie":my_movie})
 # Create your views here.
 
