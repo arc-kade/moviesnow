@@ -1,40 +1,12 @@
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ movie.movie }} | Movie Details</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% block title %}{{ movie.movie }} | Movie Details{% endblock %}
 
-<nav class="navbar">
-    <div class="navbar-inner">
-
-        <a href="{% url 'index' %}" class="brand">
-            Movie<span>Hub</span>
-        </a>
-
-        <div class="nav-links">
-            <a href="{% url 'index' %}">Home</a>
-
-            <a href="{% url 'all-movies' %}">Movie List</a>
-
-            <a href="{% url 'add-movies' %}" class="nav-cta">
-                Add Movie
-            </a>
-        </div>
-
-    </div>
-</nav>
+{% block content %}
 <main class="container page-section">
     {% if movie %}
     <article class="detail-card">
-        <img src="{{ movie.poster.url }}"
-             alt="{{ movie.movie }}"
-             class="detail-poster">
+        <img src="{{ movie.poster.url }}" alt="{{ movie.movie }}" class="detail-poster">
 
         <div class="detail-content">
             <h1>{{ movie.movie }}</h1>
@@ -61,13 +33,11 @@
             </div>
 
             <div class="detail-actions">
-                <a class="btn" href="{{ movie.trailer_link }}"
-                   target="_blank" rel="noopener noreferrer">
+                <a class="btn" href="{{ movie.trailer_link }}" target="_blank" rel="noopener noreferrer">
                     Watch Trailer
                 </a>
 
-                <a class="btn btn-secondary"
-                   href="{% url 'update-movie' movie.pk %}">
+                <a class="btn btn-secondary" href="{% url 'update-movie' movie.pk %}">
                     Update Movie
                 </a>
 
@@ -78,5 +48,4 @@
     <p>No Movie Found</p>
     {% endif %}
 </main>
-</body>
-</html>
+{% endblock %}
