@@ -68,6 +68,12 @@ def viewMovie(request,movie_id):
         my_movie=None
     
     return render(request, "movie-detail.html",{"movie":my_movie})
+
+
+def deleteMovie(request,movie_id):
+    movie=Movie.objects.get(id=movie_id)
+    movie.delete()
+    return redirect(movie_list)
 # Create your views here.
 
 

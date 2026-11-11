@@ -40,12 +40,21 @@
                 <a class="btn btn-secondary" href="{% url 'update-movie' movie.pk %}">
                     Update Movie
                 </a>
-
+                <a class="btn btn-danger" href="{%url 'delete_movie' movie.pk %}" onclick="return deleteMovie()">
+                    Delete Movie
+                </a>
             </div>
         </div>
     </article>
     {% else %}
     <p>No Movie Found</p>
     {% endif %}
+
+    <script>
+        function deleteMovie(){
+            let choice=confirm("Do you wish to delete the movie?")
+            return choice
+        }
+    </script>
 </main>
 {% endblock %}
