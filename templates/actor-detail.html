@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div>
+            <h1>{{actor.name}}</h1>
+            <img src="{{actor.portrait.url}}">
+            <p>{{actor.about}}</p>
+            <a href="{% url 'update_actor' actor.id %}">Update Actor</a>
+            <form method = "post" action="{% url 'delete_actor' actor.id %}" onsubmit="return confirmDelete()">
+                {% csrf_token %}
+                <input type="submit" value="Delete">
+            </form>
+        </div>
+    </main>
+    <script>
+        function confirmDelete(){
+            let choice=confirm("Do you wish to delete?")
+            return choice
+        }
+    </script>
+</body>
+</html>

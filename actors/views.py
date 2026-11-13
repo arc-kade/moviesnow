@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from actors.forms import ActorForm
-from django.views.generic import ListView,CreateView,UpdateView,DeleteView
+from django.views.generic import ListView,CreateView,UpdateView,DeleteView,DetailView
 from .models import Actors
 from django.urls import reverse_lazy
 # Create your views here.
@@ -30,3 +30,17 @@ class AllActors(ListView):
     template_name="actors-list.html"
     context_object_name="actors"
 
+class UpdateActor(UpdateView):
+    model=Actors
+    form_class=ActorForm
+    template_name="update-actors.html"
+    success_url=reverse_lazy("actors_list")
+
+class ActorDetail(DetailView):
+    model=Actors
+    context_object_name="actor"
+    template_name="actor-detail.html"
+
+class DeleteActor(DeleteView):
+    model=Actors
+    success_url=reverse_lazy("actors_list")
