@@ -22,7 +22,28 @@ class Movie(models.Model):
     poster=models.ImageField(upload_to="poster/")
     description=models.TextField()
     rating=models.DecimalField(max_digits=3,decimal_places=1)
+    actors=models.ManyToManyField(
+        "actors.Actors",
+        related_name="movies",
+        blank=True,
+    )
 
     def __str__(self):
         return self.movie
 # Create your models here.
+
+class Cast(models.Model):
+    movie= models.ForeignKey(Movie, on_delete=models.CASCADE)
+    actor= models.ForeignKey("actors.Actor", on_delete=models.CASCADE)
+    character_name=models.CharField(max_length=100,blank=True)
+
+    class Meta:
+        constraints=[
+            models.UniqueConstraint(
+                fields=["movie", "actor", "character_name"],
+                name="unique_movie_actor_character",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.actor} in {self.movie}"

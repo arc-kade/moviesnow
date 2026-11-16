@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from .models import Profile
 
 # Create your views here.
 
@@ -18,8 +20,14 @@ def signUp(request):
         if User.objects.filter(username=email).exists():  #checks whether the value stored in email exists in the username field
             return redirect("login")
         else:
-            user = User.objects.create_user(username=email,first_name=f_name,last_name=l_name,password=password)    #creates a new user instance to the database
-            user.save()
+            with transaction.atomic():
+                user = User.objects.create_user(username=email,first_name=f_name,last_name=l_name,password=password)
+                Profile.objects.create(
+                    user=user,
+                    place=request.POST["place"],
+                    profile_pic=request.FILES["profile_pic"],
+                    dob=request.POST["dob"],
+                )
             return redirect("login")
     return render(request,"register.html")
 

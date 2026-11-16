@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from movies.models import Category,Movie
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from actors.models import Actors
 # Create your views here.
 
 def home(request):
@@ -25,7 +26,11 @@ def addMovie(request):
 
 def movie_list(request):
     movies = Movie.objects.all()
-    return render(request,'all-movies.html',{'movies':movies})
+    actor_id=request.GET.get("actor")
+    if actor_id:
+        movies = movies.filter(actors__id=actor_id)
+
+    return render(request,'all-movies.html',{'movies':movies, 'actors':Actors.objects.all()})
 
 def category_movies(request,slug):
     category=get_object_or_404(Category,slug=slug)
@@ -74,6 +79,8 @@ def deleteMovie(request,movie_id):
     movie=Movie.objects.get(id=movie_id)
     movie.delete()
     return redirect(movie_list)
+
+
 # Create your views here.
 
 
