@@ -8,8 +8,5 @@ class CategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(Category,CategoryAdmin)
 
-@admin.register(Movie)
-class MovieAdmin(admin.ModelAdmin):
-    filter_horizontal=("actors")
-    list_filter = ("actors")
+
 

@@ -1,0 +1,12 @@
+<div class="cast-row">
+    <select name="cast_actor">
+        <option value="">Select actor</option>
+        {% for a in actors %}
+            <option value="{{ a.id }}" {% if a.id == selected_id %}selected{% endif %}>
+                {{ a.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <input type="text" name="cast_character" value="{{ character }}" placeholder="Character name">
+    <button type="button" class="remove-cast">✕</button>
+</div>

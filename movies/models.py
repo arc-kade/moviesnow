@@ -24,6 +24,7 @@ class Movie(models.Model):
     rating=models.DecimalField(max_digits=3,decimal_places=1)
     actors=models.ManyToManyField(
         "actors.Actors",
+        through="Cast",
         related_name="movies",
         blank=True,
     )
@@ -34,7 +35,7 @@ class Movie(models.Model):
 
 class Cast(models.Model):
     movie= models.ForeignKey(Movie, on_delete=models.CASCADE)
-    actor= models.ForeignKey("actors.Actor", on_delete=models.CASCADE)
+    actor= models.ForeignKey("actors.Actors", on_delete=models.CASCADE)
     character_name=models.CharField(max_length=100,blank=True)
 
     class Meta:

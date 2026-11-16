@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from movies.models import Category,Movie
+from movies.models import Category,Movie,Cast
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from actors.models import Actors
@@ -8,35 +8,60 @@ from actors.models import Actors
 def home(request):
     return render(request,"index.html")
 
+def save_cast(movie,post):
+    movie.cast_set.all().delete()
+    actor_ids = post.getlist("cast_actor")
+    characters = post.getlist("cast_character")
+    valid = {
+        str(i)
+        for i in Actors.objects.filter(
+            id__in=[a for a in actor_ids if a]
+        ).values_list("id",flat=True)
+    }
+    seen, rows = set(), []
+    for aid, ch, in zip(actor_ids,characters):
+        ch = ch.strip()
+        if aid in valid and (aid,ch) not in seen:
+            seen.add((aid,ch))
+            rows.append(Cast(movie=movie, actor_id=aid,character_name=ch))
+    Cast.objects.bulk_create(rows)
+
+
 @login_required(login_url="login")
 def addMovie(request):
     if request.method=="POST":
-        movie=request.POST["movie"]
-        trailer=request.POST["trailer_link"]
-        cate=request.POST["category"]
-        category=Category.objects.get(id=cate)
-        release_date=request.POST["release_date"]
-        poster=request.FILES["poster"]
-        desc=request.POST["description"]
-        rating=request.POST["rating"]
-        Movie(movie=movie,trailer_link=trailer,category=category,release_date=release_date,poster=poster,description=desc,rating=rating).save()
+        category=Category.objects.get(id=request.POST["category"])
+        new_movie = Movie(
+            movie=request.POST["movie"],
+            trailer=request.POST["trailer_link"],
+            category=category,
+            release_date=request.POST["release_date"],
+            poster=request.FILES["poster"],
+            desc=request.POST["description"],
+            rating=request.POST["rating"],
+        )
+        new_movie.save()
+        save_cast(new_movie,request.POST)
         return redirect("all-movies")
-    categories=Category.objects.all()
-    return render(request,"add-movies.html")
+    return render(request,"add-movies.html", 
+                  {"categories":Category.objects.all(),
+                   "actors":Actors.objects.all(),
+                   "existing_cast":[]})
 
 def movie_list(request):
     movies = Movie.objects.all()
     actor_id=request.GET.get("actor")
+    selected_actor = None
     if actor_id:
         movies = movies.filter(actors__id=actor_id)
-
-    return render(request,'all-movies.html',{'movies':movies, 'actors':Actors.objects.all()})
+        selected_actor = Actors.objects.filter(id=actor_id).first()
+    return render(request,'all-movies.html',{'movies':movies, 'actors':Actors.objects.all(), 'selected_actor':selected_actor,})
 
 def category_movies(request,slug):
     category=get_object_or_404(Category,slug=slug)
     movies=Movie.objects.filter(category=category)
     return render(
-        request,'all-movies.html',{"movies":movies,"selected_category":category},
+        request,'all-movies.html',{"movies":movies,"selected_category":category, "actors":Actors.objects.all()},
     )
 
 @login_required(login_url="login")
@@ -44,35 +69,37 @@ def updateMovie(request,movie_id):
     categories = Category.objects.all()
     movie=get_object_or_404(Movie,id=movie_id)
     if request.method=="POST":
-        movie_name=request.POST["movie"]
-        tr_link=request.POST["trailer_link"]
+        movie.movie=request.POST["movie"]
+        movie.trailer_link=request.POST["trailer_link"]
         cate = request.POST["category"]
-        category=Category.objects.get(id=cate)
-        re_date=request.POST["release_date"]
+        movie.category=Category.objects.get(id=cate)
+        movie.release_date=request.POST["release_date"]
         if "poster" in request.FILES:
-            poster = request.FILES["poster"]
-            movie.poster = poster
-        desc = request.POST["description"]
-        rating = request.POST["rating"]
-        movie.movie=movie_name
-        movie.trailer_link=tr_link
-        movie.category=category
-        movie.release_date=re_date
-        movie.description=desc
-        movie.rating=rating
+            movie.poster = request.FILES["poster"]
+        movie.description = request.POST["description"]
+        movie.rating = request.POST["rating"]
         movie.save()
+        save_cast(movie,request.POST)
         return redirect("movie-detail",movie_id)
-    return render(request, "update-movie.html",{"movie":movie,"categories":categories})
+    return render(request, "update-movie.html",{
+        "movie":movie,
+        "categories":categories,
+        "actors":Actors.objects.all(),
+        "existing_cast":Cast.objects.filter(movie=movie)})
 
 @login_required(login_url="login")
 def viewMovie(request,movie_id):
     try:
-        my_movie= Movie.objects.get(id=movie_id)
-
+        my_movie= Movie.objects.filter(id=movie_id).first()
+        cast= (
+            Cast.objects.filter(movie=my_movie).select_related("actor")
+            if my_movie else []
+        )
+        
     except Movie.DoesNotExist:
         my_movie=None
     
-    return render(request, "movie-detail.html",{"movie":my_movie})
+    return render(request, "movie-detail.html",{"movie":my_movie,"cast":cast})
 
 
 def deleteMovie(request,movie_id):

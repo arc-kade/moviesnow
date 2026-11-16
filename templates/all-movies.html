@@ -1,46 +1,55 @@
 {% extends 'base.html' %}
-
 {% block title %}MovieHub : All Movies{% endblock %}
 
-
 {% block content %}
-   <main class="container page-section">
+<main class="container page-section">
     <div class="section-heading">
-         <h1>{% if selected_category %}{{ selected_category.category }} Movies{% else %}Explore Movies{% endif %}</h1>
-         <p>Browse {% if selected_category %}movies in this category.{% else %}your movie collection.{% endif %}</p>
+        <h1>
+            {% if selected_category %}{{ selected_category.category }} Movies
+            {% elif selected_actor %}Movies with {{ selected_actor.name }}
+            {% else %}Explore Movies{% endif %}
+        </h1>
+        <p>
+            Browse
+            {% if selected_category %}movies in this category.
+            {% elif selected_actor %}movies featuring this actor.
+            {% else %}your movie collection.{% endif %}
+        </p>
     </div>
+
+    <!-- Actor filter -->
+    <form method="GET" action="{% url 'all-movies' %}" class="filter-bar">
+        <select name="actor" onchange="this.form.submit()">
+            <option value="">All actors</option>
+            {% for a in actors %}
+                <option value="{{ a.id }}"
+                        {% if selected_actor and selected_actor.id == a.id %}selected{% endif %}>
+                    {{ a.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
 
     <div class="movie-grid">
         {% for movie in movies %}
             <article class="movie-card">
                 {% if movie.poster %}
-                    <img src="{{ movie.poster.url }}"
-                         alt="{{ movie.movie }}"
-                         class="movie-poster">
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.movie }}" class="movie-poster">
                 {% endif %}
 
                 <div class="movie-card-body">
                     <h2>{{ movie.movie }}</h2>
-
-                    <span class="rating">
-                        ★ {{ movie.rating }}/10
-                    </span>
-
-                    <a class="btn"
-                       href="{% url 'movie-detail' movie.pk %}">
-                        View Details
-                    </a>
+                    <span class="rating">★ {{ movie.rating }}/10</span>
+                    <a class="btn" href="{% url 'movie-detail' movie.pk %}">View Details</a>
                 </div>
             </article>
         {% empty %}
             <div class="empty-state">
-                <h2>No movies yet</h2>
-                <p>Add your first movie to get started.</p>
-                <a class="btn" href="{% url 'add-movies' %}">
-                    Add Movie
-                </a>
+                <h2>No movies found</h2>
+                <p>Add a movie to get started.</p>
+                <a class="btn" href="{% url 'add-movies' %}">Add Movie</a>
             </div>
-            {% endfor %}
-        </div>
-    </main>
+        {% endfor %}
+    </div>
+</main>
 {% endblock %}

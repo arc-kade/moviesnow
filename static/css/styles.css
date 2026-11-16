@@ -742,3 +742,8 @@ button:focus-visible {
     outline: 3px solid #c4b5fd;
     outline-offset: 3px;
 }
+.cast-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.cast-row select, .cast-row input { flex: 1; }
+.remove-cast { background: none; border: 1px solid #ccc; cursor: pointer; padding: 0 10px; }
+.cast-list { padding-left: 20px; margin-bottom: 16px; }
+.filter-bar { margin-bottom: 20px; }

@@ -3,133 +3,91 @@
 
 {% block content %}
 <main class="container page-section">
+    <div class="form-card">
 
-        <div class="form-card">
+        <h1>Add Movie</h1>
+        <p>Enter the movie details below to add a new movie.</p>
 
-            <h1>Add Movie</h1>
-            <p>Enter the movie details below to add a new movie.</p>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-            <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="movie">Movie Name</label>
+                <input type="text" id="movie" name="movie"
+                       placeholder="Enter movie name" maxlength="100" required>
+            </div>
 
-                {% csrf_token %}
+            <div class="form-group">
+                <label for="trailer_link">Trailer Link</label>
+                <input type="url" id="trailer_link" name="trailer_link"
+                       placeholder="https://www.youtube.com/watch?v=..." required>
+            </div>
 
-                <!-- Movie Name -->
-                <div class="form-group">
-                    <label for="movie">Movie Name</label>
-                    <input
-                        type="text"
-                        id="movie"
-                        name="movie"
-                        placeholder="Enter movie name"
-                        maxlength="100"
-                        required
-                    >
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="release_date">Release Date</label>
+                <input type="date" id="release_date" name="release_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="poster">Movie Poster</label>
+                <input type="file" id="poster" name="poster" accept="image/*" required>
+                <small class="help-text">Upload a movie poster image.</small>
+            </div>
+
+            <!-- Cast -->
+            <div class="form-group">
+                <label>Cast</label>
+                <div id="cast-rows">
+                    {% for c in existing_cast %}
+                        {% include "cast_row.html" with selected_id=c.actor_id character=c.character_name %}
+                    {% endfor %}
                 </div>
+                <button type="button" class="btn btn-secondary" id="add-cast">+ Add actor</button>
 
+                <template id="cast-template">
+                    {% include "cast_row.html" with selected_id=None character="" %}
+                </template>
+            </div>
 
-                <!-- Trailer Link -->
-                <div class="form-group">
-                    <label for="trailer_link">Trailer Link</label>
-                    <input
-                        type="url"
-                        id="trailer_link"
-                        name="trailer_link"
-                        placeholder="https://www.youtube.com/watch?v=..."
-                        required
-                    >
-                </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description"
+                          placeholder="Enter movie description..." required></textarea>
+            </div>
 
+            <div class="form-group">
+                <label for="rating">Rating (Out of 10)</label>
+                <input type="number" id="rating" name="rating" placeholder="Example: 8.5"
+                       min="0" max="10" step="0.1" required>
+            </div>
 
-                <!-- Category -->
-                <div class="form-group">
-                    <label for="category">Category</label>
+            <div class="form-actions">
+                <button type="submit" class="btn">Add Movie</button>
+                <a href="{% url 'all-movies' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
 
-                    <select id="category" name="category" required>
-                        <option value="">Select Category</option>
-
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">
-                                {{ category }}
-                            </option>
-                        {% endfor %}
-
-                    </select>
-                </div>
-
-
-                <!-- Release Date -->
-                <div class="form-group">
-                    <label for="release_date">Release Date</label>
-                    <input
-                        type="date"
-                        id="release_date"
-                        name="release_date"
-                        required
-                    >
-                </div>
-
-
-                <!-- Poster -->
-                <div class="form-group">
-                    <label for="poster">Movie Poster</label>
-                    <input
-                        type="file"
-                        id="poster"
-                        name="poster"
-                        accept="image/*"
-                        required
-                    >
-                    <small class="help-text">
-                        Upload a movie poster image.
-                    </small>
-                </div>
-
-
-                <!-- Description -->
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        placeholder="Enter movie description..."
-                        required
-                    ></textarea>
-                </div>
-
-
-                <!-- Rating -->
-                <div class="form-group">
-                    <label for="rating">Rating (Out of 10)</label>
-                    <input
-                        type="number"
-                        id="rating"
-                        name="rating"
-                        placeholder="Example: 8.5"
-                        min="0"
-                        max="10"
-                        step="0.1"
-                        required
-                    >
-                </div>
-
-
-                <!-- Form Buttons -->
-                <div class="form-actions">
-
-                    <button type="submit" class="btn">
-                        Add Movie
-                    </button>
-
-                    <a href="{% url 'all-movies' %}"
-                       class="btn btn-secondary">
-                        Cancel
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </main>
+<script>
+    const castRows = document.getElementById("cast-rows");
+    document.getElementById("add-cast").addEventListener("click", () => {
+        castRows.appendChild(document.getElementById("cast-template").content.cloneNode(true));
+    });
+    castRows.addEventListener("click", e => {
+        if (e.target.classList.contains("remove-cast")) {
+            e.target.closest(".cast-row").remove();
+        }
+    });
+</script>
 {% endblock %}

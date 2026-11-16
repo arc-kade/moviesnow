@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block title %}{{ movie.movie }} | Movie Details{% endblock %}
 
 {% block content %}
@@ -11,16 +10,13 @@
         <div class="detail-content">
             <h1>{{ movie.movie }}</h1>
 
-            <span class="rating">
-                ★ {{ movie.rating }}/10
-            </span>
+            <span class="rating">★ {{ movie.rating }}/10</span>
 
             <div class="detail-info">
                 <div class="info-item">
                     <strong>Category</strong>
                     <span>{{ movie.category }}</span>
                 </div>
-
                 <div class="info-item">
                     <strong>Release Date</strong>
                     <span>{{ movie.release_date|date:"d M Y" }}</span>
@@ -32,15 +28,27 @@
                 {{ movie.description|linebreaks }}
             </div>
 
+            <h2>Cast</h2>
+            {% if cast %}
+                <ul class="cast-list">
+                    {% for c in cast %}
+                        <li>
+                            <a href="{% url 'all-movies' %}?actor={{ c.actor.id }}">{{ c.actor.name }}</a>
+                            {% if c.character_name %} as {{ c.character_name }}{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No cast added yet.</p>
+            {% endif %}
+
             <div class="detail-actions">
                 <a class="btn" href="{{ movie.trailer_link }}" target="_blank" rel="noopener noreferrer">
                     Watch Trailer
                 </a>
-
-                <a class="btn btn-secondary" href="{% url 'update-movie' movie.pk %}">
-                    Update Movie
-                </a>
-                <a class="btn btn-danger" href="{%url 'delete_movie' movie.pk %}" onclick="return deleteMovie()">
+                <a class="btn btn-secondary" href="{% url 'update-movie' movie.pk %}">Update Movie</a>
+                <a class="btn btn-danger" href="{% url 'delete_movie' movie.pk %}"
+                   onclick="return confirm('Do you wish to delete the movie?')">
                     Delete Movie
                 </a>
             </div>
@@ -49,12 +57,5 @@
     {% else %}
     <p>No Movie Found</p>
     {% endif %}
-
-    <script>
-        function deleteMovie(){
-            let choice=confirm("Do you wish to delete the movie?")
-            return choice
-        }
-    </script>
 </main>
 {% endblock %}
