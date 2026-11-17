@@ -742,8 +742,204 @@ button:focus-visible {
     outline: 3px solid #c4b5fd;
     outline-offset: 3px;
 }
-.cast-row { display: flex; gap: 8px; margin-bottom: 8px; }
-.cast-row select, .cast-row input { flex: 1; }
-.remove-cast { background: none; border: 1px solid #ccc; cursor: pointer; padding: 0 10px; }
-.cast-list { padding-left: 20px; margin-bottom: 16px; }
-.filter-bar { margin-bottom: 20px; }
+/* ========================================
+   12. Cast, actor filter, ratings and reviews
+======================================== */
+
+/* Cast rows in the add/update forms */
+.cast-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.cast-row select,
+.cast-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.remove-cast {
+    flex: 0 0 auto;
+    padding: 0 14px;
+    background: var(--surface-light);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.remove-cast:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: white;
+}
+
+/* Cast list on the detail page */
+.cast-list {
+    margin: 0 0 16px;
+    padding-left: 20px;
+    color: var(--muted);
+}
+
+.cast-list li {
+    margin-bottom: 4px;
+}
+
+/* Actor filter on the movie list */
+.filter-bar {
+    margin-bottom: 24px;
+}
+
+.filter-bar select {
+    min-width: 220px;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.filter-bar select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+/* Editor and user ratings */
+.rating-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+.rating small {
+    margin-left: 4px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.rating-muted {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* Reviews */
+.reviews-section {
+    margin-top: 36px;
+}
+
+.review-form {
+    display: grid;
+    gap: 12px;
+    max-width: 560px;
+    margin-bottom: 28px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.review-form h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.review-form select,
+.review-form textarea {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    background: #0d1425;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-form select {
+    min-height: 46px;
+    cursor: pointer;
+}
+
+.review-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.review-form select:focus,
+.review-form textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.review-form textarea::placeholder {
+    color: #7f8ba3;
+}
+
+.review-form .btn {
+    justify-self: start;
+}
+
+.review {
+    margin-bottom: 14px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.review-header small {
+    margin-left: 6px;
+    color: var(--muted);
+}
+
+.review p {
+    margin: 10px 0 0;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+.btn-small {
+    min-height: 34px;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+    .cast-row {
+        flex-direction: column;
+    }
+
+    .remove-cast {
+        min-height: 40px;
+    }
+
+    .filter-bar select,
+    .review-form {
+        width: 100%;
+        max-width: none;
+    }
+
+    .review-form .btn {
+        justify-self: stretch;
+    }
+}

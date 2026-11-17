@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from movies.models import Category,Movie,Cast, Review
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required,require_POST
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from actors.models import Actors
 from django.db.models import Avg,Count
 # Create your views here.
@@ -51,7 +52,7 @@ def addMovie(request):
 
 def movie_list(request):
     movies = Movie.objects.annotate(
-        avg_rating=Avg("reviews_rating"),
+        avg_rating=Avg("reviews__rating"),
         review_count=Count("reviews"),
     )
     actor_id=request.GET.get("actor")
@@ -145,3 +146,10 @@ def add_review(request,movie_id):
     )
     return redirect("movie-detail", movie_id)
 
+@login_required(login_url="login")
+@require_POST
+def delete_review(request,review_id):
+    review = get_object_or_404(Review, id=review_id)
+    if review.user_id==request.user.id or request.user.is_staff:
+        review.delete()
+    return redirect("movie-detail",review.movie_id)
