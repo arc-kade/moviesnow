@@ -1,5 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
+from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class Category(models.Model):
     category=models.CharField(max_length=50,unique=True)
@@ -21,7 +24,7 @@ class Movie(models.Model):
     release_date=models.DateField()
     poster=models.ImageField(upload_to="poster/")
     description=models.TextField()
-    rating=models.DecimalField(max_digits=3,decimal_places=1)
+    user_rating=models.DecimalField(max_digits=3,decimal_places=1)
     actors=models.ManyToManyField(
         "actors.Actors",
         through="Cast",
@@ -48,3 +51,22 @@ class Cast(models.Model):
 
     def __str__(self):
         return f"{self.actor} in {self.movie}"
+
+
+class Review(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reviews")
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["movie", "user"], name="one_review_per_user_per_movie")
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} on {self.movie}"

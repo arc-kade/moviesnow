@@ -10,7 +10,17 @@
         <div class="detail-content">
             <h1>{{ movie.movie }}</h1>
 
-            <span class="rating">★ {{ movie.rating }}/10</span>
+            <div class="rating-row">
+                <span class="rating">★ {{ movie.editor_rating }}/10 <small>Editor</small></span>
+                {% with avg=movie.average_rating %}
+                    {% if avg %}
+                        <span class="rating">★ {{ avg|floatformat:1 }}/10
+                            <small>Users ({{ reviews|length }})</small></span>
+                    {% else %}
+                        <span class="rating-muted">No user ratings yet</span>
+                    {% endif %}
+                {% endwith %}
+            </div>
 
             <div class="detail-info">
                 <div class="info-item">
@@ -54,8 +64,64 @@
             </div>
         </div>
     </article>
+
+    <!-- Reviews -->
+    <section class="reviews-section">
+        <h2>Reviews</h2>
+
+        <form method="POST" action="{% url 'add-review' movie.pk %}" class="review-form">
+            {% csrf_token %}
+            <h3>{% if user_review %}Edit your review{% else %}Rate this movie{% endif %}</h3>
+
+            <select name="rating" required>
+                <option value="">Select score</option>
+                <option value="10" {% if user_review.rating == 10 %}selected{% endif %}>(10) Masterpiece</option>
+                <option value="9"  {% if user_review.rating == 9 %}selected{% endif %}>(9) Great</option>
+                <option value="8"  {% if user_review.rating == 8 %}selected{% endif %}>(8) Very Good</option>
+                <option value="7"  {% if user_review.rating == 7 %}selected{% endif %}>(7) Good</option>
+                <option value="6"  {% if user_review.rating == 6 %}selected{% endif %}>(6) Fine</option>
+                <option value="5"  {% if user_review.rating == 5 %}selected{% endif %}>(5) Average</option>
+                <option value="4"  {% if user_review.rating == 4 %}selected{% endif %}>(4) Bad</option>
+                <option value="3"  {% if user_review.rating == 3 %}selected{% endif %}>(3) Very Bad</option>
+                <option value="2"  {% if user_review.rating == 2 %}selected{% endif %}>(2) Horrible</option>
+                <option value="1"  {% if user_review.rating == 1 %}selected{% endif %}>(1) Appalling</option>
+            </select>
+
+            <textarea name="comment" rows="3"
+                      placeholder="Share your thoughts (optional)">{% if user_review %}{{ user_review.comment }}{% endif %}</textarea>
+
+            <button type="submit" class="btn">
+                {% if user_review %}Update Review{% else %}Submit Review{% endif %}
+            </button>
+        </form>
+
+        {% for r in reviews %}
+            <article class="review">
+                <div class="review-header">
+                    <div>
+                        <strong>{{ r.user.username }}</strong>
+                        <span class="rating">★ {{ r.rating }}/10</span>
+                        <small>{{ r.created_at|date:"d M Y" }}</small>
+                    </div>
+
+                    {% if r.user_id == request.user.id or request.user.is_staff %}
+                        <form method="POST" action="{% url 'delete-review' r.pk %}"
+                              onsubmit="return confirm('Delete this review?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                {% if r.comment %}<p>{{ r.comment|linebreaksbr }}</p>{% endif %}
+            </article>
+        {% empty %}
+            <p>No reviews yet. Be the first to review this movie.</p>
+        {% endfor %}
+    </section>
+
     {% else %}
-    <p>No Movie Found</p>
+        <p>No Movie Found</p>
     {% endif %}
 </main>
 {% endblock %}

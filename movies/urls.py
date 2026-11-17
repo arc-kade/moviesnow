@@ -8,5 +8,6 @@ urlpatterns=[
     path('movies/category/<slug:slug>/', views.category_movies, name='category_movies'),
     path("update-movie/<int:movie_id>/",views.updateMovie,name="update-movie"),
     path("details/<int:movie_id>/",views.viewMovie,name="movie-detail"),
-    path("delete/<int:movie_id>/",views.deleteMovie,name="delete_movie")
+    path("delete/<int:movie_id>/",views.deleteMovie,name="delete_movie"),
+    path("details/<int:movie_id>/review/",views.add_review,name="add-review")
 ]

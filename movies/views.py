@@ -1,8 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from movies.models import Category,Movie,Cast
+from movies.models import Category,Movie,Cast, Review
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,require_POST
 from actors.models import Actors
+from django.db.models import Avg,Count
 # Create your views here.
 
 def home(request):
@@ -38,7 +39,7 @@ def addMovie(request):
             release_date=request.POST["release_date"],
             poster=request.FILES["poster"],
             desc=request.POST["description"],
-            rating=request.POST["rating"],
+            editor_rating=request.POST["editor_rating"],
         )
         new_movie.save()
         save_cast(new_movie,request.POST)
@@ -49,19 +50,31 @@ def addMovie(request):
                    "existing_cast":[]})
 
 def movie_list(request):
-    movies = Movie.objects.all()
+    movies = Movie.objects.annotate(
+        avg_rating=Avg("reviews_rating"),
+        review_count=Count("reviews"),
+    )
     actor_id=request.GET.get("actor")
     selected_actor = None
     if actor_id:
-        movies = movies.filter(actors__id=actor_id)
-        selected_actor = Actors.objects.filter(id=actor_id).first()
-    return render(request,'all-movies.html',{'movies':movies, 'actors':Actors.objects.all(), 'selected_actor':selected_actor,})
+        movies = movies.filter(pk__in=Cast.objects.filter(actor_id=actor_id).values("movie_id"))
+        selected_actor=Actors.objects.filter(id=actor_id).values("movie_id")
+    return render(request,'all-movies.html',{
+        'movies':movies, 
+        'actors':Actors.objects.all(), 
+        'selected_actor':selected_actor,
+        })
 
 def category_movies(request,slug):
     category=get_object_or_404(Category,slug=slug)
-    movies=Movie.objects.filter(category=category)
-    return render(
-        request,'all-movies.html',{"movies":movies,"selected_category":category, "actors":Actors.objects.all()},
+    movies=Movie.objects.filter(category=category).annotate(
+        avg_rating=Avg("reviews__rating"),
+        review_count=Count("reviews"),
+    )
+    return render(request,'all-movies.html',
+                  {"movies":movies,
+                   "selected_category":category, 
+                   "actors":Actors.objects.all(),},
     )
 
 @login_required(login_url="login")
@@ -77,7 +90,7 @@ def updateMovie(request,movie_id):
         if "poster" in request.FILES:
             movie.poster = request.FILES["poster"]
         movie.description = request.POST["description"]
-        movie.rating = request.POST["rating"]
+        movie.editor_rating = request.POST["editor_rating"]
         movie.save()
         save_cast(movie,request.POST)
         return redirect("movie-detail",movie_id)
@@ -89,17 +102,20 @@ def updateMovie(request,movie_id):
 
 @login_required(login_url="login")
 def viewMovie(request,movie_id):
-    try:
-        my_movie= Movie.objects.filter(id=movie_id).first()
-        cast= (
-            Cast.objects.filter(movie=my_movie).select_related("actor")
-            if my_movie else []
-        )
-        
-    except Movie.DoesNotExist:
-        my_movie=None
     
-    return render(request, "movie-detail.html",{"movie":my_movie,"cast":cast})
+    my_movie= Movie.objects.filter(id=movie_id).first()
+    cast= (
+        Cast.objects.filter(movie=my_movie).select_related("actor")
+        if my_movie else []
+    )
+    reviews=my_movie.reviews.select_related("user") if my_movie else []
+    user_review=reviews.filter(user=request.user).first() if my_movie else[]
+    
+    return render(request, "movie-detail.html",{
+        "movie":my_movie,
+        "cast":cast,
+        "reviews":reviews,
+        "user_review":user_review,},)
 
 
 def deleteMovie(request,movie_id):
@@ -110,4 +126,22 @@ def deleteMovie(request,movie_id):
 
 # Create your views here.
 
+
+@login_required(login_url="login")
+@require_POST
+def add_review(request,movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    try:
+        rating=int(request.POST.get("rating",""))
+    except ValueError:
+        return redirect("movie-detail",movie_id)
+    if not 1<= rating <=10:
+        return redirect("movie-detail",movie_id)
+
+    Review.objects.update_or_create(
+        movie=movie,
+        user=request.user,
+        defaults={"rating":rating,"comment":request.POST.get("comment","").strip()},
+    )
+    return redirect("movie-detail", movie_id)
 

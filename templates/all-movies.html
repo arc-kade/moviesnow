@@ -39,7 +39,15 @@
 
                 <div class="movie-card-body">
                     <h2>{{ movie.movie }}</h2>
-                    <span class="rating">★ {{ movie.rating }}/10</span>
+
+                    <div class="rating-row">
+                        <span class="rating">★ {{ movie.editor_rating }}/10 <small>Editor</small></span>
+                        {% if movie.review_count %}
+                            <span class="rating">★ {{ movie.avg_rating|floatformat:1 }}/10
+                                <small>Users ({{ movie.review_count }})</small></span>
+                        {% endif %}
+                    </div>
+
                     <a class="btn" href="{% url 'movie-detail' movie.pk %}">View Details</a>
                 </div>
             </article>
