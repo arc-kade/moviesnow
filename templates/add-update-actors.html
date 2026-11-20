@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Actor</title>
 </head>
+
 <body>
-    <main>
-        <h1>Update Actor</h1>
+    {% if object %}
+    <h1>Update Actor</h1>
+    {% else %}
+    <h1>Add Actor</h1>
+    {% endif %}
+    <main style="display: flex;">
+        {% if object %}
+        <div>
+            <img src="{{object.portrait.url}}" alt="image not found">
+        </div>
+        {% endif %}
         <div>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{form.as_p}}
-                <input type="submit" value="Update Actor">
+                <input type="submit" {%if object%} value="Update Actor" {%else%} value="Add Actor" {%endif%}>
             </form>
         </div>
     </main>
 </body>
+
 </html>
