@@ -158,6 +158,85 @@ hr {
     background: var(--primary-hover);
 }
 
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.nav-dropdown > summary::-webkit-details-marker {
+    display: none;
+}
+
+.nav-dropdown > summary:hover,
+.nav-dropdown[open] > summary {
+    color: white;
+    background: var(--surface-light);
+}
+
+.dropdown-caret {
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.2s ease;
+}
+
+.nav-dropdown[open] .dropdown-caret {
+    transform: translateY(2px) rotate(225deg);
+}
+
+.category-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 110;
+    min-width: 190px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.nav-links .category-menu a {
+    display: block;
+    padding: 9px 11px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.nav-links .category-menu a:hover {
+    color: white;
+    background: var(--surface-light);
+}
+
+.category-menu-empty {
+    display: block;
+    padding: 9px 11px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.nav-dropdown:focus-within > summary {
+    outline: 3px solid #c4b5fd;
+    outline-offset: 3px;
+}
+
 
 /* ========================================
    3. Buttons
@@ -350,6 +429,91 @@ hr {
     border-radius: var(--radius);
 }
 
+.poster-placeholder,
+.actor-photo-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    color: var(--muted);
+    text-align: center;
+    background:
+        radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.18), transparent 55%),
+        var(--surface-light);
+}
+
+.poster-placeholder {
+    border-radius: 12px;
+}
+
+.actor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.actor-card {
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.actor-card:hover {
+    transform: translateY(-5px);
+    border-color: #6952a8;
+}
+
+.actor-photo {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    background-color: var(--surface-light);
+}
+
+.actor-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 18px;
+}
+
+.actor-card-body h2 {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.actor-card-body p {
+    margin: 0 0 8px;
+}
+
+.actor-card-body .btn {
+    width: 100%;
+    margin-top: auto;
+}
+
+.actor-empty-state {
+    grid-column: 1 / -1;
+}
+
+.section-heading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.section-heading-actions h1,
+.section-heading-actions p {
+    margin-bottom: 0;
+}
+
 
 /* ========================================
    6. Add and update movie forms
@@ -371,6 +535,39 @@ hr {
 
 .form-group {
     margin-bottom: 22px;
+}
+
+.form-group .form-control {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    background: #0d1425;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-group .form-control[type="file"] {
+    padding: 8px;
+}
+
+.form-group .form-control[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--surface-light);
+    color: var(--text);
+    cursor: pointer;
 }
 
 .form-group label {
@@ -418,7 +615,8 @@ hr {
 
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group .form-control:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
 }
@@ -444,6 +642,34 @@ hr {
     border-radius: 10px;
 }
 
+.actor-form-card {
+    width: min(760px, 100%);
+}
+
+.actor-current-photo {
+    width: 150px;
+    aspect-ratio: 3 / 4;
+}
+
+.field-error {
+    margin: 7px 0 0;
+    color: #fca5a5;
+    font-size: 0.9rem;
+}
+
+.form-errors {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 9px;
+}
+
+.confirm-card {
+    max-width: 640px;
+}
+
 
 /* ========================================
    7. Movie detail page
@@ -460,6 +686,19 @@ hr {
     border-radius: 18px;
     box-shadow: var(--shadow);
 }
+
+.actor-detail-card {
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+}
+
+.actor-detail-photo {
+    aspect-ratio: 3 / 4;
+}
+
+.detail-actions form {
+    margin: 0;
+}
+
 
 .detail-poster {
     width: 100%;
@@ -577,7 +816,8 @@ button:focus-visible {
 ======================================== */
 
 @media (max-width: 1000px) {
-    .movie-grid {
+    .movie-grid,
+    .actor-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
@@ -600,18 +840,26 @@ button:focus-visible {
         font-size: 0.9rem;
     }
 
-    .movie-grid {
+    .movie-grid,
+    .actor-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
     }
 
-    .detail-card {
+    .detail-card,
+    .actor-detail-card {
         grid-template-columns: 1fr;
     }
 
-    .detail-poster {
+    .detail-poster,
+    .actor-detail-photo {
         max-width: 320px;
         margin: 0 auto;
+    }
+
+    .section-heading-actions {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .page-section {
@@ -625,7 +873,8 @@ button:focus-visible {
         width: calc(100% - 28px);
     }
 
-    .movie-grid {
+    .movie-grid,
+    .actor-grid {
         grid-template-columns: 1fr;
     }
 
@@ -653,6 +902,11 @@ button:focus-visible {
     .form-card {
         padding: 20px 16px;
     }
+
+    .detail-actions form,
+    .detail-actions form .btn {
+        width: 100%;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -664,282 +918,12 @@ button:focus-visible {
         animation-duration: 0.01ms !important;
     }
 }
-.nav-dropdown {
-    position: relative;
+/* Authentication pages */
+
+.auth-card {
+    max-width: 480px;
 }
 
-.nav-dropdown > summary {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 9px;
-    color: var(--muted);
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    list-style: none;
-}
-
-.nav-dropdown > summary::-webkit-details-marker {
-    display: none;
-}
-
-.nav-dropdown > summary:hover,
-.nav-dropdown[open] > summary {
-    color: white;
-    background: var(--surface-light);
-}
-
-.dropdown-caret {
-    width: 7px;
-    height: 7px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: translateY(-2px) rotate(45deg);
-    transition: transform 0.2s ease;
-}
-
-.nav-dropdown[open] .dropdown-caret {
-    transform: translateY(2px) rotate(225deg);
-}
-
-.category-menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 110;
-    min-width: 190px;
-    max-height: 60vh;
-    overflow-y: auto;
-    padding: 7px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-}
-
-.nav-links .category-menu a {
-    display: block;
-    padding: 9px 11px;
-    color: var(--muted);
-    white-space: nowrap;
-}
-
-.nav-links .category-menu a:hover {
-    color: white;
-    background: var(--surface-light);
-}
-
-.category-menu-empty {
-    display: block;
-    padding: 9px 11px;
-    color: var(--muted);
-    font-size: 0.9rem;
-}
-
-.nav-dropdown:focus-within > summary {
-    outline: 3px solid #c4b5fd;
-    outline-offset: 3px;
-}
-/* ========================================
-   12. Cast, actor filter, ratings and reviews
-======================================== */
-
-/* Cast rows in the add/update forms */
-.cast-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.cast-row select,
-.cast-row input {
-    flex: 1;
-    min-width: 0;
-}
-
-.remove-cast {
-    flex: 0 0 auto;
-    padding: 0 14px;
-    background: var(--surface-light);
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    font: inherit;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.remove-cast:hover {
-    background: #dc2626;
-    border-color: #dc2626;
-    color: white;
-}
-
-/* Cast list on the detail page */
-.cast-list {
-    margin: 0 0 16px;
-    padding-left: 20px;
-    color: var(--muted);
-}
-
-.cast-list li {
-    margin-bottom: 4px;
-}
-
-/* Actor filter on the movie list */
-.filter-bar {
-    margin-bottom: 24px;
-}
-
-.filter-bar select {
-    min-width: 220px;
-    max-width: 100%;
-    min-height: 44px;
-    padding: 10px 14px;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font: inherit;
-    cursor: pointer;
-}
-
-.filter-bar select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
-}
-
-/* Editor and user ratings */
-.rating-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    margin: 8px 0;
-}
-
-.rating small {
-    margin-left: 4px;
-    color: var(--muted);
-    font-weight: 600;
-}
-
-.rating-muted {
-    color: var(--muted);
-    font-size: 0.9rem;
-}
-
-/* Reviews */
-.reviews-section {
-    margin-top: 36px;
-}
-
-.review-form {
-    display: grid;
-    gap: 12px;
-    max-width: 560px;
-    margin-bottom: 28px;
-    padding: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
-
-.review-form h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.review-form select,
-.review-form textarea {
-    display: block;
+.auth-card .form-actions .btn {
     width: 100%;
-    padding: 12px 14px;
-    background: #0d1425;
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    font: inherit;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.review-form select {
-    min-height: 46px;
-    cursor: pointer;
-}
-
-.review-form textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.review-form select:focus,
-.review-form textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
-}
-
-.review-form textarea::placeholder {
-    color: #7f8ba3;
-}
-
-.review-form .btn {
-    justify-self: start;
-}
-
-.review {
-    margin-bottom: 14px;
-    padding: 16px 18px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
-
-.review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.review-header small {
-    margin-left: 6px;
-    color: var(--muted);
-}
-
-.review p {
-    margin: 10px 0 0;
-    color: var(--text);
-    overflow-wrap: anywhere;
-}
-
-.btn-small {
-    min-height: 34px;
-    padding: 5px 12px;
-    font-size: 0.85rem;
-}
-
-@media (max-width: 480px) {
-    .cast-row {
-        flex-direction: column;
-    }
-
-    .remove-cast {
-        min-height: 40px;
-    }
-
-    .filter-bar select,
-    .review-form {
-        width: 100%;
-        max-width: none;
-    }
-
-    .review-form .btn {
-        justify-self: stretch;
-    }
 }

@@ -1,32 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{%block title%}{%if object%}Update Actor{%else%}Add Actor{%endif%} | MoviesNow {%endblock%}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Actor</title>
-</head>
+{%block content%}
+<main class="" container page-section>
+    <section class="form-card actor-form-card">
+        <h1>{%if object %}Update Actor{% else %}Add Actor{% endif %}</h1>
+        <p>{% if object %}Update {{ object.name }}'s profile details.{% else %}Add a new actor to your collection. {% endif %}</p>
 
-<body>
-    {% if object %}
-    <h1>Update Actor</h1>
-    {% else %}
-    <h1>Add Actor</h1>
-    {% endif %}
-    <main style="display: flex;">
-        {% if object %}
-        <div>
-            <img src="{{object.portrait.url}}" alt="image not found">
-        </div>
+        {% if object and object.portrait %}
+        <img class="current-poster actor-cuurent-portrait" src="{{ object.portrait.url }}"
+            alt="Current photo of {{ object.name}}">
         {% endif %}
-        <div>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{form.as_p}}
-                <input type="submit" {%if object%} value="Update Actor" {%else%} value="Add Actor" {%endif%}>
-            </form>
-        </div>
-    </main>
-</body>
-
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="form-errors" role="alert">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<small class="help-text">{{ field.help_text }}</small>{% endif %}
+                {% for error in field.errors %}
+                <p class="field-error" role="alert">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            <div class="form-actions">
+                <button class="btn" type="submit">{% if object %}Save Changes{% else %}Add Actor{% endif %}</button>
+                <a class="btn btn-secondary"
+                    href="{% if object %}{% url 'actor_detail' object.pk %}{% else %}{% url 'actors_list' %}{% endif %}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}
 </html>
