@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from actors.models import Actors
 from django.db.models import Avg,Count
+from accounts.decorators import superuser_required
 # Create your views here.
 
 def home(request):
@@ -29,7 +30,7 @@ def save_cast(movie,post):
     Cast.objects.bulk_create(rows)
 
 
-@login_required(login_url="login")
+@superuser_required
 def addMovie(request):
     if request.method=="POST":
         category=Category.objects.get(id=request.POST["category"])
@@ -78,7 +79,7 @@ def category_movies(request,slug):
                    "actors":Actors.objects.all(),},
     )
 
-@login_required(login_url="login")
+@superuser_required
 def updateMovie(request,movie_id):
     categories = Category.objects.all()
     movie=get_object_or_404(Movie,id=movie_id)
@@ -118,7 +119,7 @@ def viewMovie(request,movie_id):
         "reviews":reviews,
         "user_review":user_review,},)
 
-
+@superuser_required
 def deleteMovie(request,movie_id):
     movie=Movie.objects.get(id=movie_id)
     movie.delete()
